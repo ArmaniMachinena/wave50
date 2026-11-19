@@ -32,7 +32,7 @@ const blob = Buffer.concat([Buffer.from(iv), Buffer.from(ct)]).toString('base64'
 
 const gate = `<!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wave50</title><meta name="robots" content="noindex">
+<title>Wave50 · Pandemic Monitor</title><meta name="robots" content="noindex">
 <style>html,body{margin:0;height:100%;background:#070b10;color:#e6edf3;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .g{height:100%;display:flex;align-items:center;justify-content:center}.c{width:min(340px,90vw);text-align:center}
 .l{font-size:40px;font-weight:900}.l span{color:#4fd1c5}.s{color:#8596ab;margin:4px 0 22px}
