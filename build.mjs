@@ -14,7 +14,7 @@ const rd = p => fs.readFileSync(path.join(MODS, 'node_modules', p), 'utf8');
 const geo = JSON.parse(fs.readFileSync('collector/geo.json', 'utf8'));
 const num2cc = Object.fromEntries(Object.entries(geo).map(([cc, v]) => [v[0], cc]));
 const W = JSON.parse(fs.readFileSync('collector/world.json', 'utf8'));
-for (const [cc, v] of Object.entries(W.countries)) { v.ru = geo[cc] ? geo[cc][2][0] : (v.native || cc); }
+for (const [cc, v] of Object.entries(W.countries)) { v.ru = geo[cc] ? geo[cc][2][0] : (v.native || cc); v.en = geo[cc] ? geo[cc][1][0] : (v.native || cc); }
 const snapshot = fs.readFileSync(process.env.W50_SNAPSHOT || '/tmp/snap.json', 'utf8');
 const libs = `<script>${rd('d3/dist/d3.min.js')}</script>\n<script>${rd('topojson-client/dist/topojson-client.min.js')}</script>\n<script>window.W50_WORLD=${rd('world-atlas/countries-110m.json')}</script>`;
 let app = fs.readFileSync('src/index.html', 'utf8')
@@ -39,9 +39,9 @@ const gate = `<!DOCTYPE html>
 input[type=password]{width:100%;padding:12px;border-radius:9px;border:1px solid #1d2a38;background:#0e151d;color:#e6edf3;font-size:16px;box-sizing:border-box}
 button{width:100%;margin-top:10px;padding:12px;border:0;border-radius:9px;background:#4fd1c5;color:#0b1016;font-weight:800;font-size:15px;cursor:pointer}
 label{display:block;margin-top:12px;color:#8596ab;font-size:12px}.e{color:#f08a8f;min-height:20px;margin-top:10px;font-size:13px}</style></head>
-<body><div class="g"><form class="c" id="f"><div class="l">Wave<span>50</span></div><div class="s">Детектор эпидемий · закрытая демо-версия</div>
-<input type="password" id="p" placeholder="Пароль" autofocus autocomplete="current-password"><button>ВОЙТИ</button>
-<label><input type="checkbox" id="r" checked> Запомнить на 30 дней</label><div class="e" id="e"></div></form></div>
+<body><div class="g"><form class="c" id="f"><div class="l">Wave<span>50</span></div><div class="s">Epidemic detector · private beta<br>Детектор эпидемий · закрытая демо-версия</div>
+<input type="password" id="p" placeholder="Password / Пароль" autofocus autocomplete="current-password"><button>ENTER · ВОЙТИ</button>
+<label><input type="checkbox" id="r" checked> Remember 30 days · Запомнить</label><div class="e" id="e"></div></form></div>
 <script>
 const SALT='${cfg.salt}',IT=${cfg.iter},BLOB='${blob}';
 const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
@@ -53,9 +53,9 @@ async function derive(pw){const base=await crypto.subtle.importKey('raw',new Tex
  return crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:Uint8Array.from(SALT.match(/../g),h=>parseInt(h,16)),iterations:IT},base,256)}
 (async()=>{try{const s=sessionStorage.getItem('w50k');const r=JSON.parse(localStorage.getItem('w50r')||'null');
  const k=s||(r&&r.exp>Date.now()?r.k:null);if(k)await open(Uint8Array.from(atob(k),c=>c.charCodeAt(0)))}catch(e){localStorage.removeItem('w50r')}})();
-document.getElementById('f').onsubmit=async e=>{e.preventDefault();const E=document.getElementById('e');E.textContent='Проверяю…';
+document.getElementById('f').onsubmit=async e=>{e.preventDefault();const E=document.getElementById('e');E.textContent='…';
  try{const raw=await derive(document.getElementById('p').value);if(document.getElementById('r').checked)localStorage.setItem('w50r',JSON.stringify({k:b64(raw),exp:Date.now()+30*864e5}));await open(raw)}
- catch(x){E.textContent='Неверный пароль';localStorage.removeItem('w50r')}};
+ catch(x){E.textContent='Wrong password · Неверный пароль';localStorage.removeItem('w50r')}};
 </script></body></html>`;
 fs.writeFileSync('index.html', gate);
 console.log('index.html', (gate.length / 1024).toFixed(0) + ' KB');
