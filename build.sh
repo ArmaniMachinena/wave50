@@ -12,5 +12,6 @@ MODS="${W50_MODULES_DIR:-/tmp/w50mods}"
 [ -d "$MODS/node_modules/d3" ] || (mkdir -p "$MODS" && cd "$MODS" && npm init -y >/dev/null && npm i --silent d3@7 topojson-client@3 world-atlas@2)
 python3 collector/collect.py --snapshot /tmp/snap.json
 W50_MODULES_DIR="$MODS" node build.mjs
+mkdir -p whatifmodel && cp index.html whatifmodel/index.html
 tar cz src collector | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:WAVE50_PASSWORD -out source.enc
 echo "Готово"
