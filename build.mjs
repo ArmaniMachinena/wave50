@@ -13,12 +13,15 @@ const rd = p => fs.readFileSync(path.join(MODS, 'node_modules', p), 'utf8');
 
 const geo = JSON.parse(fs.readFileSync('collector/geo.json', 'utf8'));
 const num2cc = Object.fromEntries(Object.entries(geo).map(([cc, v]) => [v[0], cc]));
+const W = JSON.parse(fs.readFileSync('collector/world.json', 'utf8'));
+for (const [cc, v] of Object.entries(W.countries)) { v.ru = geo[cc] ? geo[cc][2][0] : (v.native || cc); }
 const snapshot = fs.readFileSync(process.env.W50_SNAPSHOT || '/tmp/snap.json', 'utf8');
 const libs = `<script>${rd('d3/dist/d3.min.js')}</script>\n<script>${rd('topojson-client/dist/topojson-client.min.js')}</script>\n<script>window.W50_WORLD=${rd('world-atlas/countries-110m.json')}</script>`;
 let app = fs.readFileSync('src/index.html', 'utf8')
   .replace('<!--LIBS-->', () => libs)
   .replace('/*SNAPSHOT*/null', () => snapshot)
-  .replace('/*NUM2CC*/{}', () => JSON.stringify(num2cc));
+  .replace('/*NUM2CC*/{}', () => JSON.stringify(num2cc))
+  .replace('/*WORLD*/{}', () => JSON.stringify(W));
 
 const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
 const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: Buffer.from(cfg.salt, 'hex'), iterations: cfg.iter }, base, 256);
