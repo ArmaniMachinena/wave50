@@ -31,6 +31,8 @@ jobs:
       - name: Collect
         env:
           WAVE50_PASSWORD: ${{ secrets.WAVE50_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
         run: python3 src/collector/collect.py prev out
       - name: Publish to data branch
         run: |
