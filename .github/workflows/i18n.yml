@@ -1,0 +1,28 @@
+# One-off: machine-translate Wave50 strings to English; result is encrypted and pushed to the "i18n" branch.
+name: i18n
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src
+      - name: Unpack
+        env:
+          WAVE50_PASSWORD: ${{ secrets.WAVE50_PASSWORD }}
+        run: cd src && openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:WAVE50_PASSWORD -in source.enc | tar xz collector
+      - run: pip install --quiet cryptography
+      - name: Translate
+        env:
+          WAVE50_PASSWORD: ${{ secrets.WAVE50_PASSWORD }}
+        run: python3 src/collector/i18n_tr.py out
+      - name: Publish
+        run: |
+          cd out && git init --quiet -b i18n && git add -A \
+            && git -c user.name="wave50-bot" -c user.email="wave50-bot@users.noreply.github.com" commit --quiet -m "i18n" \
+            && git push --quiet --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" i18n
