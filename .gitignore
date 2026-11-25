@@ -1,3 +1,5 @@
 src/
 collector/
 node_modules/
+*.png
+*.jpg
